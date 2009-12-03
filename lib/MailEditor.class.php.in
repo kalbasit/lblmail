@@ -27,29 +27,17 @@
 
 class MailEditor {
 
-	/** this represents the path to the mailFile */
-	protected $_mailFile;
+	/** This represents the path to the mailFile */
+	protected $_mailFile = null;
+
+	/** this represents the contents of the email as is */
+	protected $_content = null;
 
 	/** This represents the header part of the mail */
 	protected $_header = null;
 
 	/** This represents the body part of the mail */
 	protected $_body = null;
-
-	/**
-	 * This functions extracts the mail header and record it in $_header (protected)
-	 *
-	 * @return void
-	 */
-	protected function _extractHeader() {}
-
-	/**
-	 * This function extract the body and record it in $_body (protected)
-	 *
-	 * @return void
-	 */
-	protected function _extractBody() {}
-
 
 	/**
 	 * Create an email editor object out of an email file (NOT an mbox file)
@@ -67,11 +55,74 @@ class MailEditor {
 		/** record the path */
 		$this->_mailFile = $mailFile;
 
-		/** Extract the header */
-		$this->_extractHeader();
+		/** Extract the content */
+		$this->_extractContent();
 
-		/** Extract the body */
-		$this->_extractBody();
+		/** Extract the header and the body */
+		$this->_extractHeaderBody();
+	}
+
+	/**
+	 * Exctract the content of an email
+	 *
+	 * @return void
+	 */
+	protected function _extractContent() {
+
+		/** Open the file as read-only */
+		$fd = fopen($this->_mailFile, "r");
+
+		/** Get the contents */
+		$this->_content = fread($fd, filesize($this->_mailFile));
+
+		/** Close the file */
+		fclose($fd);
+	}
+
+	/**
+	 * This functions extracts the mail header and body from $this->_content and record them in $this->_header and $this->_body
+	 *
+	 * @return void
+	 */
+	protected function _extractHeaderBody() {
+
+	}
+
+	/**
+	 * This function is used to merge the header and body back in content
+	 *
+	 * @return void
+	 */
+	protected function _mergeHeaderBody() {}
+
+	/**
+	 * An accessor to $this->_content
+	 *
+	 * @return string
+	 */
+	public function getContent() {
+
+		return $this->_content;
+	}
+
+	/**
+	 * An accessor to $this->_header
+	 *
+	 * @return string
+	 */
+	public function getHeader() {
+
+		return $this->_header;
+	}
+
+	/**
+	 * An accessor to $this->_body
+	 *
+	 * @return string
+	 */
+	public function getBody() {
+
+		return $this->_body;
 	}
 
 	/**
