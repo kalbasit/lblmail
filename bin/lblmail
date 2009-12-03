@@ -1,0 +1,19 @@
+#!/bin/sh
+
+LIB_DIR="@LIB_DIR@"
+PHP_BIN="`which php`"
+
+# Sanity Check
+if [ ! -f "${LIB_DIR}/lblmail.php" ]; then
+	echo "I could not find lblmail.php, aborting..."
+	exit 1
+fi
+if [ ! -x "${PHP_BIN}" ]; then
+	echo "I could not find a usuable php, aborting..."
+	exit 1
+fi
+
+# Run lblmail
+${PHP_BIN} -n ${LIB_DIR}/lblmail.php ${@}
+
+exit $?
