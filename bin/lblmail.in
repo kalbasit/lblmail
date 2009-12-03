@@ -1,6 +1,6 @@
 #!/bin/sh
 
-LIB_DIR="@LIB_DIR@"
+LIB_DIR="@LIBDIR@"
 PHP_BIN="`which php`"
 
 # Sanity Check

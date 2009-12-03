@@ -6,7 +6,7 @@ $HOME = getenv('HOME');
 define('CONFIG_FILE_PATH', $HOME . '/.lblmailrc');
 
 /** Define the share dir path */
-define('SHARE_DIR', '@SHARE_DIR@');
+define('SHARE_DIR', '@SHAREDIR@');
 
 /** Define the lib dir path */
 define('LIB_DIR', realpath(dirname(__FILE__)));
