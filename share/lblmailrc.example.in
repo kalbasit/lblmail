@@ -1,0 +1,87 @@
+<?php
+/*
+ *	vim:ft=php:fenc=UTF-8:ts=4:sts=0:sw=4:noexpandtab:foldmethod=marker:foldlevel=0:
+ *
+ * lblmail is a small utility written in PHP, it allow you to label emails based on
+ * rules à la procmail, the advantage over procmail is the ability to apply the label
+ * to the given mail file, which means you can post-process the mail.
+ *
+ * Copyright (c) 2007 Wael Nasreddine <wael.nasreddine@gmail.com>
+ *
+ * This file is part of LblMail.
+ *
+ * LblMail is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * LblMail is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with LblMail.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
+/**
+ * Each operation is an array inside the $operations array, you don't need to initialize
+ * the $operations but you need to make sure you append to it and not re-write unless you
+ * to re-create it.
+ *
+ * An operation is defined by
+ * 		'on': On what you are operating on, can be one of the below:
+ * 				subject
+ * 				to
+ * 				from
+ * 				headers
+ * 				message
+ *
+ * 		'pattern': The pattern we would give to preg_match, it should always be a regex understood
+ * 				   by preg_match.
+ * 				   For more information refer http://www.php.net/manual/en/function.preg-match.php
+ *
+ * 		'label': This represent the label to give the mail if the pattern is found in the message
+ *
+ * 		'match': This represent the label to give the mail if the pattern is found and the label
+ * 				 is taken from $matches. This is an int!!
+ *
+ * 		'onlyLabel': An optional argument, if true will overwrite all labels and be the only one.
+ *
+ * 	N.B: You should only give one of 'label' or 'match', if 'label' is given, 'match' would be ignored
+ *
+ */
+
+/** Match SPAM */
+$operations[] = array (
+	'on' 		=> 'headers',
+	'pattern' 	=> '/^X-Spam-Level: \*{4,7}/',
+	'label' 	=> 'Spam',
+);
+
+/** Match mailing list */
+$operations[] = array (
+	'on' 		=> 'headers',
+	'pattern' 	=> '/^(X-Mailing-List-Name|X-BeenThere|X-Loop|X-list): ([^@]+)/',
+	'match' 	=> '2',
+	'onlyLabel'	=> true,
+);
+$operations[] = array (
+	'on' 		=> 'headers',
+	'pattern' 	=> '/^Sender: owner-([^@]+)/',
+	'match' 	=> '1',
+	'onlyLabel'	=> true,
+);
+$operations[] = array (
+	'on' 		=> 'headers',
+	'pattern' 	=> '/^Delivered-To: mailing list ([^@]+)/',
+	'match' 	=> '1',
+	'onlyLabel'	=> true,
+);
+$operations[] = array (
+	'on' 		=> 'headers',
+	'pattern' 	=> '/^(X-Mailing-List|X-List-ID|List-ID): <([^@]+)/',
+	'match' 	=> '2',
+	'onlyLabel'	=> true,
+);
