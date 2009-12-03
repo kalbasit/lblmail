@@ -1,11 +1,11 @@
-VERSION=@VERSION@
+VERSION=
 
-prefix=/usr/local
-bindir=$(prefix)/bin
-libdir=$(prefix)/lib
-sharedir=$(prefix)/share
-INSTALL=install
-MAKE=make
+prefix=
+bindir=
+libdir=
+sharedir=
+INSTALL=
+MAKE=
 
 targets:
 	sed -e "s:@VERSION@:$(VERSION):g" \
@@ -18,8 +18,8 @@ targets:
 		MailEditor.class.php.in > MailEditor.class.php
 
 install:
-	$(INSTALL) -m 644 lblmail.php $(DESTDIR)$(libdir)/lblmail/lblmail.php
-	$(INSTALL) -m 644 MailEditor.class.php $(DESTDIR)$(libdir)/lblmail/MailEditor.class.php
+	$(INSTALL) -m 644 lblmail.php $(DESTDIR)$(libdir)/lblmail.php
+	$(INSTALL) -m 644 MailEditor.class.php $(DESTDIR)$(libdir)/MailEditor.class.php
 
 clean:
 	rm -f lblmail.php

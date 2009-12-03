@@ -1,11 +1,11 @@
-VERSION=@VERSION@
+VERSION=
 
-prefix=/usr/local
-bindir=$(prefix)/bin
-libdir=$(prefix)/lib
-sharedir=$(prefix)/share
-INSTALL=install
-MAKE=make
+prefix=
+bindir=
+libdir=
+sharedir=
+INSTALL=
+MAKE=
 
 targets:
 	sed -e "s:@VERSION@:$(VERSION):g" \
@@ -14,7 +14,7 @@ targets:
 		lblmailrc.example.in > lblmailrc.example
 
 install:
-	$(INSTALL) -m 644 lblmailrc.example $(DESTDIR)$(sharedir)/lblmail/lblmailrc.example
+	$(INSTALL) -m 644 lblmailrc.example $(DESTDIR)$(sharedir)/lblmailrc.example
 
 clean:
 	rm -f lblmailrc.example
