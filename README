@@ -1,0 +1,20 @@
+
+INTRODUCTION
+============
+
+This small utility, written by PHP, is designed to help you label your emails following predefined rules,
+rules defined in a setting file.
+
+WHY
+===
+
+The 1000,000 dollar question, why? Why create such utility with the presence of procmail? Correct me if I'm
+wrong, but procmail cannot be used to post-process an email, such as label it, and save changes on the same file.
+
+This is needed if you are using offlineimap, because offlineimap track changes to emails using the filename,
+it is impossible to rename the file and still end up with a synced emails, you will probably end up deleting it.
+
+HOW
+===
+
+TODO
