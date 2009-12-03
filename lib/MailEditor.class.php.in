@@ -27,6 +27,9 @@
 
 class MailEditor {
 
+	/** The header representing the labels */
+	const LABEL_HEADER = 'X-Label: ';
+
 	/** This represents the path to the mailFile */
 	protected $_mailFile = null;
 
@@ -39,6 +42,7 @@ class MailEditor {
 	protected $_to       = '';
 	protected $_subject  = '';
 	protected $_message  = '';
+	protected $_labels   = array();
 
 	/**
 	 * Create an email editor object out of an email file (NOT an mbox file)
@@ -106,6 +110,12 @@ class MailEditor {
 
 			/** Treat this line and put it somewhere */
 			if ($splittingHeaders === true) {
+				/** Is this line a label? */
+				if(strpos($lines[$i], self::LABEL_HEADER) === 0) {
+					$this->_explodeLabels($lines[$i]);
+					continue;
+				}
+
 				/** this is a header */
 				$this->_headers .= $lines[$i]."\n";
 
@@ -131,7 +141,10 @@ class MailEditor {
 	 *
 	 * @return void
 	 */
-	protected function _mergeHeaderMessage() {}
+	protected function _mergeHeaderMessage() {
+
+		$this->_content = $this->_headers . $this->_implodeLabels() . "\n\n" . $this->_message;
+	}
 
 	/**
 	 * An accessor to $this->_content
@@ -164,6 +177,16 @@ class MailEditor {
 	}
 
 	/**
+	 * An accessor to $this->_labels
+	 *
+	 * @return array
+	 */
+	public function getLabels() {
+
+		return $this->_labels;
+	}
+
+	/**
 	 * An accessor to all collected information
 	 *
 	 * @return array
@@ -175,6 +198,8 @@ class MailEditor {
 			'to'		=> $this->_to,
 			'headers'	=> $this->_headers,
 			'message'	=> $this->_message,
+			'labels'	=> $this->_labels,
+			'content'	=> $this->_content,
 		);
 
 		return $everything;
@@ -193,18 +218,78 @@ class MailEditor {
 	}
 
 	/**
-	 * Add a label to the email
+	 * Add a label to the email, if a label already exists the $label will be appended unless $onlyLabel is true
 	 *
 	 * @param string $label
+	 * @param bool $onlyLabel defaults to false, if true remove any existing label
 	 * @return void
 	 */
-	public function addLabel($label) {}
+	protected function _addLabel($label, $onlyLabel = false) {
+
+		/** Is there a label already in this message ? */
+		if(!empty($this->_labels) && $onlyLabel === false) {
+			if(!in_array($label, $this->_labels)) {
+				$this->_labels[] = $label;
+			}
+		} else {
+			$this->_labels = array($label);
+		}
+	}
+
+	/**
+	 * explode labels into an array
+	 *
+	 * @param $labels
+	 * @return void
+	 */
+	protected function _explodeLabels($labels) {
+
+		/** Remove the Header from the labels */
+		$labels = trim(str_replace(self::LABEL_HEADER, '', $labels));
+
+		/** split it into an array */
+		$labels = explode(',', $labels);
+
+		/** trim the labels */
+		foreach($labels as &$label) {
+			$label = trim($label);
+		}
+
+		/** Set the labels to this array */
+		$this->_labels = $labels;
+	}
+
+	/**
+	 * Implode labels from an array to a string
+	 *
+	 * @return string
+	 */
+	protected function _implodeLabels() {
+
+		/** Prefix the imploded array from labels with the label header */
+		$labels = self::LABEL_HEADER . implode(', ', $this->_labels);
+
+		return $labels;
+	}
 
 	/**
 	 * Save the mail to mailFile
 	 *
 	 * @return bool
 	 */
-	public function save() {}
+	public function save() {
+
+		/** Merge the headers and message */
+		$this->_mergeHeaderMessage();
+
+		/** Open the file in write mode */
+		$fd = fopen($this->_mailFile, "w");
+
+		/** Write the content */
+		fwrite($fd, $this->_content);
+
+		/** close the file */
+		fclose($fd);
+	}
 }
 ?>
