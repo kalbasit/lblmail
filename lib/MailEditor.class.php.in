@@ -31,13 +31,14 @@ class MailEditor {
 	protected $_mailFile = null;
 
 	/** this represents the contents of the email as is */
-	protected $_content = null;
+	protected $_content  = '';
 
-	/** This represents the header part of the mail */
-	protected $_header = null;
-
-	/** This represents the body part of the mail */
-	protected $_body = null;
+	/** These represents the collected information about the email */
+	protected $_headers  = '';
+	protected $_from     = '';
+	protected $_to       = '';
+	protected $_subject  = '';
+	protected $_message  = '';
 
 	/**
 	 * Create an email editor object out of an email file (NOT an mbox file)
@@ -58,8 +59,8 @@ class MailEditor {
 		/** Extract the content */
 		$this->_extractContent();
 
-		/** Extract the header and the body */
-		$this->_extractHeaderBody();
+		/** Extract the known information from the email */
+		$this->_extractInformation();
 	}
 
 	/**
@@ -80,20 +81,57 @@ class MailEditor {
 	}
 
 	/**
-	 * This functions extracts the mail header and body from $this->_content and record them in $this->_header and $this->_body
+	 * This functions extracts all known information from $this->_content
 	 *
 	 * @return void
 	 */
-	protected function _extractHeaderBody() {
+	protected function _extractInformation() {
 
+		/** get the lines */
+		$lines = explode("\n", $this->_content);
+
+		/** At first we are parsing the headers */
+		$splittingHeaders = true;
+
+		for ($i=0; $i < count($lines); $i++) {
+
+			/** Is this an empty line ? */
+			if (trim($lines[$i])=="") {
+				/** empty line, header section has ended */
+				$splittingHeaders = false;
+
+				/** We don't want to include this empty line in the headers */
+				continue;
+			}
+
+			/** Treat this line and put it somewhere */
+			if ($splittingHeaders === true) {
+				/** this is a header */
+				$this->_headers .= $lines[$i]."\n";
+
+				/** look out for special headers */
+				if (preg_match("/^Subject: (.*)/", $lines[$i], $matches)) {
+					$this->_subject = $matches[1];
+				}
+				if (preg_match("/^From: (.*)/", $lines[$i], $matches)) {
+					$this->_from = $matches[1];
+				}
+				if (preg_match("/^To: (.*)/", $lines[$i], $matches)) {
+					$this->_to = $matches[1];
+				}
+			} else {
+				/** not a header, but message */
+				$this->_message .= $lines[$i]."\n";
+			}
+		}
 	}
 
 	/**
-	 * This function is used to merge the header and body back in content
+	 * This function is used to merge the header and message back in content
 	 *
 	 * @return void
 	 */
-	protected function _mergeHeaderBody() {}
+	protected function _mergeHeaderMessage() {}
 
 	/**
 	 * An accessor to $this->_content
@@ -106,23 +144,40 @@ class MailEditor {
 	}
 
 	/**
-	 * An accessor to $this->_header
+	 * An accessor to $this->_headers
 	 *
 	 * @return string
 	 */
-	public function getHeader() {
+	public function getHeaders() {
 
-		return $this->_header;
+		return $this->_headers;
 	}
 
 	/**
-	 * An accessor to $this->_body
+	 * An accessor to $this->_message
 	 *
 	 * @return string
 	 */
-	public function getBody() {
+	public function getMessage() {
 
-		return $this->_body;
+		return $this->_message;
+	}
+
+	/**
+	 * An accessor to all collected information
+	 *
+	 * @return array
+	 */
+	public function getEverything() {
+
+		$everything = array(
+			'from'		=> $this->_from,
+			'to'		=> $this->_to,
+			'headers'	=> $this->_headers,
+			'message'	=> $this->_message,
+		);
+
+		return $everything;
 	}
 
 	/**
@@ -131,7 +186,19 @@ class MailEditor {
 	 * @param array $operations
 	 * @return bool
 	 */
-	public function doOperations($operations) {}
+	public function doOperations($operations) {
+
+		/** cycle through operations and do one by one */
+		foreach($operations as $operation) { }
+	}
+
+	/**
+	 * Add a label to the email
+	 *
+	 * @param string $label
+	 * @return void
+	 */
+	public function addLabel($label) {}
 
 	/**
 	 * Save the mail to mailFile
