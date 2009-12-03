@@ -6,6 +6,7 @@ libdir=$(prefix)/lib/lblmail
 sharedir=$(prefix)/share/lblmail
 INSTALL=install
 MAKE=make
+SUBDIRS = bin lib share
 
 all: dist targets;
 
@@ -17,37 +18,19 @@ ChangeLog:
 AUTHORS:
 	(GIT_DIR=.git git log | grep ^Author | sort |uniq > .authors.tmp && mv .authors.tmp AUTHORS; rm -f .authors.tmp) || (touch AUTHORS; echo 'git directory not found: installing possibly empty AUTHORS.' >&2)
 
-targets: make-bin-targets make-lib-targets make-share-targets
+targets: subdirs
 
-make-bin-targets:
-	sed -e "s:\(VERSION=\).*:\1$(VERSION):g" \
-		-e "s:\(bindir=\).*:\1$(bindir):g" \
-		-e "s:\(libdir=\).*:\1$(libdir):g" \
-		-e "s:\(sharedir=\).*:\1$(sharedir):g" \
-		-e "s:\(INSTALL=\).*:\1$(INSTALL):g" \
-		-e "s:\(MAKE=\).*:\1$(MAKE):g" \
-		bin/Makefile.in > bin/Makefile
-	$(MAKE) -C bin targets
-
-make-lib-targets:
-	sed -e "s:\(VERSION=\).*:\1$(VERSION):g" \
-		-e "s:\(bindir=\).*:\1$(bindir):g" \
-		-e "s:\(libdir=\).*:\1$(libdir):g" \
-		-e "s:\(sharedir=\).*:\1$(sharedir):g" \
-		-e "s:\(INSTALL=\).*:\1$(INSTALL):g" \
-		-e "s:\(MAKE=\).*:\1$(MAKE):g" \
-		lib/Makefile.in > lib/Makefile
-	$(MAKE) -C lib targets
-
-make-share-targets:
-	sed -e "s:\(VERSION=\).*:\1$(VERSION):g" \
-		-e "s:\(bindir=\).*:\1$(bindir):g" \
-		-e "s:\(libdir=\).*:\1$(libdir):g" \
-		-e "s:\(sharedir=\).*:\1$(sharedir):g" \
-		-e "s:\(INSTALL=\).*:\1$(INSTALL):g" \
-		-e "s:\(MAKE=\).*:\1$(MAKE):g" \
-		share/Makefile.in > share/Makefile
-	$(MAKE) -C share targets
+subdirs:
+	for dir in $(SUBDIRS); do \
+		sed -e "s:\(VERSION=\).*:\1$(VERSION):g" \
+			-e "s:\(bindir=\).*:\1$(bindir):g" \
+			-e "s:\(libdir=\).*:\1$(libdir):g" \
+			-e "s:\(sharedir=\).*:\1$(sharedir):g" \
+			-e "s:\(INSTALL=\).*:\1$(INSTALL):g" \
+			-e "s:\(MAKE=\).*:\1$(MAKE):g" \
+			$$dir/Makefile.in > $$dir/Makefile; \
+		$(MAKE) -C $$dir targets; \
+	done
 
 install:
 	$(INSTALL) -d -m 755 $(DESTDIR)$(bindir)
@@ -59,31 +42,19 @@ install:
 	$(MAKE) -C lib install
 	$(MAKE) -C share install
 
-clean:
-	sed -e "s:\(VERSION=\).*:\1$(VERSION):g" \
-		-e "s:\(bindir=\).*:\1$(bindir):g" \
-		-e "s:\(libdir=\).*:\1$(libdir):g" \
-		-e "s:\(sharedir=\).*:\1$(sharedir):g" \
-		-e "s:\(INSTALL=\).*:\1$(INSTALL):g" \
-		-e "s:\(MAKE=\).*:\1$(MAKE):g" \
-		bin/Makefile.in > bin/Makefile
-	sed -e "s:\(VERSION=\).*:\1$(VERSION):g" \
-		-e "s:\(bindir=\).*:\1$(bindir):g" \
-		-e "s:\(libdir=\).*:\1$(libdir):g" \
-		-e "s:\(sharedir=\).*:\1$(sharedir):g" \
-		-e "s:\(INSTALL=\).*:\1$(INSTALL):g" \
-		-e "s:\(MAKE=\).*:\1$(MAKE):g" \
-		lib/Makefile.in > lib/Makefile
-	sed -e "s:\(VERSION=\).*:\1$(VERSION):g" \
-		-e "s:\(bindir=\).*:\1$(bindir):g" \
-		-e "s:\(libdir=\).*:\1$(libdir):g" \
-		-e "s:\(sharedir=\).*:\1$(sharedir):g" \
-		-e "s:\(INSTALL=\).*:\1$(INSTALL):g" \
-		-e "s:\(MAKE=\).*:\1$(MAKE):g" \
-		share/Makefile.in > share/Makefile
-	$(MAKE) -C bin clean
-	$(MAKE) -C lib clean
-	$(MAKE) -C share clean
-	rm -f bin/Makefile
-	rm -f lib/Makefile
-	rm -f share/Makefile
+clean: subdirs-clean
+	rm -f ChangeLog
+	rm -f AUTHORS
+
+subdirs-clean:
+	for dir in $(SUBDIRS); do \
+		sed -e "s:\(VERSION=\).*:\1$(VERSION):g" \
+			-e "s:\(bindir=\).*:\1$(bindir):g" \
+			-e "s:\(libdir=\).*:\1$(libdir):g" \
+			-e "s:\(sharedir=\).*:\1$(sharedir):g" \
+			-e "s:\(INSTALL=\).*:\1$(INSTALL):g" \
+			-e "s:\(MAKE=\).*:\1$(MAKE):g" \
+			$$dir/Makefile.in > $$dir/Makefile; \
+		$(MAKE) -C $$dir clean; \
+		rm -f $$dir/Makefile; \
+	done
