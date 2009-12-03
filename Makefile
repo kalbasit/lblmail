@@ -1,4 +1,6 @@
-VERSION=0.1 
+# TODO: Parse the version from git log
+#       version="$(git log -1 --abbrev-commit --oneline 2>| /dev/null || echo 'unknow')"; echo $version | awk '{print $1}'
+VERSION=0.1
 
 prefix=/usr/local
 bindir=$(prefix)/bin
