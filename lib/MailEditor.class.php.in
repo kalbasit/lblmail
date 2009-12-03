@@ -100,7 +100,7 @@ class MailEditor {
 		for ($i=0; $i < count($lines); $i++) {
 
 			/** Is this an empty line ? */
-			if (trim($lines[$i])=="") {
+			if (trim($lines[$i]) == "" && $splittingHeaders === true) {
 				/** empty line, header section has ended */
 				$splittingHeaders = false;
 
@@ -116,8 +116,15 @@ class MailEditor {
 					continue;
 				}
 
+				/** Set the seperator between headers lines */
+				if(!empty($this->_headers)) {
+					$sep = "\n";
+				} else {
+					$sep = "";
+				}
+
 				/** this is a header */
-				$this->_headers .= $lines[$i]."\n";
+				$this->_headers .= $sep . $lines[$i];
 
 				/** look out for special headers */
 				if (preg_match("/^Subject: (.*)/", $lines[$i], $matches)) {
@@ -130,8 +137,15 @@ class MailEditor {
 					$this->_to = $matches[1];
 				}
 			} else {
+				/** Set the seperator between headers/message lines */
+				if(!empty($this->_message)) {
+					$sep = "\n";
+				} else {
+					$sep = "";
+				}
+
 				/** not a header, but message */
-				$this->_message .= $lines[$i]."\n";
+				$this->_message .= $sep . $lines[$i];
 			}
 		}
 	}
@@ -143,7 +157,7 @@ class MailEditor {
 	 */
 	protected function _mergeHeaderMessage() {
 
-		$this->_content = $this->_headers . $this->_implodeLabels() . "\n\n" . $this->_message;
+		$this->_content = $this->_headers . "\n" . $this->_implodeLabels() . "\n\n" . $this->_message;
 	}
 
 	/**
