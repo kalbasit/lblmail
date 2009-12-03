@@ -228,25 +228,143 @@ class MailEditor {
 	public function doOperations($operations) {
 
 		/** cycle through operations and do one by one */
-		foreach($operations as $operation) { }
+		foreach($operations as $operation) {
+
+			/** Initilize the found */
+			$found = false;
+
+			/** Run the operation */
+			switch($operation['on']) {
+				case 'headers':
+					$found = $this->_operateOnHeaders($operation);
+					break;
+				case 'message':
+					$found = $this->_operateOnMessage($operations);
+					break;
+				case 'to':
+					$found = $this->_operateOnTo($operation);
+					break;
+				case 'from':
+					$found = $this->_operateOnFrom($operation);
+					break;
+				case 'subject':
+					$found = $this->_operateOnSubject($operation);
+					break;
+				default:
+					throw new Exception('Operating on ' . $operation['on'] . ' is not supported.');
+					break;
+			}
+
+			/** Is this an onlyLabel operation? */
+			if($found === true && array_key_exists('onlyLabel', $operation) === true && $operation['onlyLabel'] === true) {
+				break;
+			}
+		}
 	}
+
+	/**
+	 * Run the operation on headers
+	 *
+	 * @param $operation array
+	 * @return bool
+	 */
+	protected function _operateOnHeaders($operation) {
+
+		/** get the lines */
+		$lines = explode("\n", $this->_headers);
+
+		/** Cycle through lines search for the pattern */
+		for ($i=0; $i < count($lines); $i++) {
+			$line = trim($lines[$i]);
+
+			$found = (bool) preg_match($operation['pattern'], $line, $matches);
+
+			if($found === true) {
+				$this->_addLabel($operation, $matches);
+				break;
+			}
+		}
+
+		return $found;
+	}
+
+	/**
+	 * Run the operation on message
+	 *
+	 * @param $operation array
+	 * @return bool
+	 */
+	protected function _operateOnMessage($operation) {}
+
+	/**
+	 * Run the operation on to
+	 *
+	 * @param $operation array
+	 * @return bool
+	 */
+	protected function _operateOnTo($operation) {}
+
+	/**
+	 * Run the operation on from
+	 *
+	 * @param $operation array
+	 * @return bool
+	 */
+	protected function _operateOnFrom($operation) {}
+
+	/**
+	 * Run the operation on subject
+	 *
+	 * @param $operation array
+	 * @return bool
+	 */
+	protected function _operateOnSubject($operation) {}
 
 	/**
 	 * Add a label to the email, if a label already exists the $label will be appended unless $onlyLabel is true
 	 *
-	 * @param string $label
+	 * @param $operation array
+	 * @param $matches array
 	 * @param bool $onlyLabel defaults to false, if true remove any existing label
 	 * @return void
 	 */
-	protected function _addLabel($label, $onlyLabel = false) {
+	protected function _addLabel($operation, $matches, $onlyLabel = false) {
+
+		/** Initilize the label / match to null */
+		$label = null;
+		$match = null;
+		$onlyLabel = false;
+
+		/** Check for label/match/onlyLabel */
+		if(array_key_exists('label', $operation) === true) {
+			$label = $operation['label'];
+		}
+		if(array_key_exists('match', $operation) === true) {
+			$match = $operation['match'];
+		}
+		if(array_key_exists('onlyLabel', $operation) === true) {
+			$onlyLabel= $operation['onlyLabel'];
+		}
+
+		/** Which one to use ? */
+		if($label !== null) {
+			$realLabel = $label;
+		} elseif ($match !== null) {
+			if($match >= count($matches)) {
+				throw new Exception('The match index is out of boundry.');
+			}
+			$realLabel = $matches[$match];
+		} else {
+			throw new Exception('Neither of $label or $match were given.');
+		}
 
 		/** Is there a label already in this message ? */
 		if(!empty($this->_labels) && $onlyLabel === false) {
-			if(!in_array($label, $this->_labels)) {
-				$this->_labels[] = $label;
+			if(!in_array($realLabel, $this->_labels)) {
+				$this->_labels[] = $realLabel;
 			}
 		} else {
-			$this->_labels = array($label);
+			$this->_labels = array($realLabel);
 		}
 	}
 
