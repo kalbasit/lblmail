@@ -365,6 +365,11 @@ class MailEditor {
 			$realLabel .= $matches[$match];
 		}
 
+		/** Sanity check */
+		if(empty($realLabel)) {
+			throw new Exception("This can't happen, but you know what? it did. \$realLabel is empty!.");
+		}
+
 		/** Is there a label already in this message ? */
 		if(!empty($this->_labels) && $onlyLabel === false) {
 			if(!in_array($realLabel, $this->_labels)) {
