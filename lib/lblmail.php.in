@@ -105,4 +105,21 @@ if(isset($labelsFile) && !empty($labelsFile)) {
 	}
 }
 
+/** Output some informations */
+if(count($mailEditor->getLabels()) > 0) {
+	/** Initilize the string */
+	$labelsString = '';
+
+	$sep = '';
+	foreach($mailEditor->getLabels() as $label) {
+		$labelsString .= $sep . $label;
+
+		$sep = ', ';
+	}
+
+	echo "Found " . count($mailEditor->getLabels()) . " label(s) for this message: " . $labelsString . "\n";
+} else {
+	echo "No labels has been found.";
+}
+
 ?>
