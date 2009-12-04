@@ -38,11 +38,11 @@ $labelsFile = getenv('HOME') . '/.labels';
  *
  * An operation is defined by
  * 		'on': On what you are operating on, can be one of the below:
- * 				subject
- * 				to
- * 				from
+ * 				subject		NOT IMPLEMENTED
+ * 				to 			NOT IMPLEMENTED
+ * 				from		NOT IMPLEMENTED
  * 				headers
- * 				message
+ * 				message		NOT IMPLEMENTED
  *
  * 		'pattern': The pattern we would give to preg_match, it should always be a regex understood
  * 				   by preg_match.
