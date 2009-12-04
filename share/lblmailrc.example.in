@@ -49,7 +49,7 @@
  *
  * 		'onlyLabel': An optional argument, if true will overwrite all labels and be the only one.
  *
- * 	N.B: You should only give one of 'label' or 'match', if 'label' is given, 'match' would be ignored
+ * 	N.B: If both match and label are given, the match will be appended to the label and will be used
  *
  */
 
@@ -64,24 +64,30 @@ $operations[] = array (
 $operations[] = array (
 	'on' 		=> 'headers',
 	'pattern' 	=> '/^(X-Mailing-List-Name|X-BeenThere|X-Loop|X-list): ([^@]+)/',
+	'label' 	=> 'ML.',
 	'match' 	=> '2',
 	'onlyLabel'	=> true,
 );
 $operations[] = array (
 	'on' 		=> 'headers',
 	'pattern' 	=> '/^Sender: owner-([^@]+)/',
+	'label' 	=> 'ML.',
 	'match' 	=> '1',
 	'onlyLabel'	=> true,
 );
 $operations[] = array (
 	'on' 		=> 'headers',
 	'pattern' 	=> '/^Delivered-To: mailing list ([^@]+)/',
+	'label' 	=> 'ML.',
 	'match' 	=> '1',
 	'onlyLabel'	=> true,
 );
 $operations[] = array (
 	'on' 		=> 'headers',
 	'pattern' 	=> '/^(X-Mailing-List|X-List-ID|List-ID): <([^@]+)/',
+	'label' 	=> 'ML.',
 	'match' 	=> '2',
 	'onlyLabel'	=> true,
 );
+
+?>

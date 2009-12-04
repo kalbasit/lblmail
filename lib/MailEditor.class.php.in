@@ -334,6 +334,7 @@ class MailEditor {
 		$label = null;
 		$match = null;
 		$onlyLabel = false;
+		$realLabel = '';
 
 		/** Check for label/match/onlyLabel */
 		if(array_key_exists('label', $operation) === true) {
@@ -346,16 +347,22 @@ class MailEditor {
 			$onlyLabel= $operation['onlyLabel'];
 		}
 
-		/** Which one to use ? */
+		/** Sanity check, at least one of label/match given */
+		if($label === null && $match === null) {
+			throw new Exception('Neither of $label or $match were given.');
+		}
+
+		/** If label defined use it */
 		if($label !== null) {
 			$realLabel = $label;
-		} elseif ($match !== null) {
+		}
+
+		/** If match defined use it */
+		if ($match !== null) {
 			if($match >= count($matches)) {
 				throw new Exception('The match index is out of boundry.');
 			}
-			$realLabel = $matches[$match];
-		} else {
-			throw new Exception('Neither of $label or $match were given.');
+			$realLabel .= $matches[$match];
 		}
 
 		/** Is there a label already in this message ? */
