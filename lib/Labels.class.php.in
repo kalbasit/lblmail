@@ -25,4 +25,99 @@
  *
  */
 
+class Labels {
+
+	/** The labels file */
+	protected $_labelsFile = null;
+
+	/** Labels file content */
+	protected $_content = null;
+
+	/** All labels */
+	protected $_labels = array();
+
+	public function __construct($labelsFile) {
+
+		/** Sanity check */
+		if(file_exists($labelsFile) === false) {
+			touch($labelsFile);
+		}
+
+		/** record the path */
+		$this->_labelsFile = $labelsFile;
+
+		/** Extract content */
+		$this->_extractContent();
+
+		/** Extract labels from the labels file */
+		$this->_extractLabels();
+	}
+
+	/**
+	 * Extract contents
+	 *
+	 * @return void
+	 */
+	protected function _extractContent() {
+
+		/** Open the file as read-only */
+		$fd = fopen($this->_labelsFile, "r");
+
+		/** Get the contents */
+		$this->_content = fread($fd, filesize($this->_labelsFile));
+
+		/** Close the file */
+		fclose($fd);
+	}
+
+	/**
+	 * Extract labels from the labels file
+	 *
+	 * @return void
+	 */
+	protected function _extractLabels() {
+
+		/** get the lines */
+		$lines = explode("\n", $this->_content);
+
+		for ($i=0; $i < count($lines); $i++) {
+			$line = trim($lines[$i]);
+
+			$this->addLabel($line);
+		}
+	}
+
+	public function addLabel($label) {
+
+		if(is_array($label)) {
+			foreach($label as $temp) {
+				$this->_addLabel($temp);
+			}
+		} else {
+			$this->_addLabel($label);
+		}
+	}
+
+	protected function _addLabel($label) {
+
+		if(in_array($label, $this->_labels) === false && !empty($label)) {
+			$this->_labels[] = $label;
+		}
+	}
+
+	public function save() {
+
+		$labels = implode("\n", $this->_labels);
+
+		/** Open the file in write mode */
+		$fd = fopen($this->_labelsFile, "w");
+
+		/** Write the content */
+		fwrite($fd, $labels);
+
+		/** close the file */
+		fclose($fd);
+	}
+
+}
 ?>
