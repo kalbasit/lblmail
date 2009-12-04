@@ -24,3 +24,24 @@
 #	along with LblMail.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+LBLMAIL="/usr/local/bin/lblmail"
+
+if [ ${#} -lt 1 ]; then
+	echo "Usage: $0 <dir to watch>"
+fi
+
+DIR="`cd ${1} && pwd`"
+
+if [ ! -d "${DIR}" ]; then
+	echo "Error: dir is not a directory."
+fi
+
+(
+	while file=`inotifywait -rq --timefmt '%d/%m/%y %H:%M' --format '%w%f' -e close_write ${DIR}`; do 
+		${LBLMAIL} $file;
+	done
+) &
+PID="$!"
+
+rm -f ${HOME}/.lbldir.pid
+echo $PID > ${HOME}/.lbldir.pid

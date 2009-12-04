@@ -35,16 +35,18 @@ MAKE=
 targets:
 	sed -e "s:@VERSION@:$(VERSION):g" \
 		-e "s:@LIBDIR@:$(libdir):g" \
+		-e "s:@BINDIR@:$(bindir):g" \
 		-e "s:@SHAREDIR@:$(sharedir):g" \
 		lblmail.in > lblmail
 	sed -e "s:@VERSION@:$(VERSION):g" \
 		-e "s:@LIBDIR@:$(libdir):g" \
+		-e "s:@BINDIR@:$(bindir):g" \
 		-e "s:@SHAREDIR@:$(sharedir):g" \
 		lbldir.in > lbldir
 
 install:
 	$(INSTALL) -m 755 lblmail $(DESTDIR)$(bindir)/lblmail
-	$(INSTALL) -m 755 lbldir $(DESTDIR)$(bindir)/lblmail
+	$(INSTALL) -m 755 lbldir $(DESTDIR)$(bindir)/lbldir
 
 clean:
 	rm -f lblmail
