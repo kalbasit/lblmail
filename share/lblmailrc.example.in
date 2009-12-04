@@ -26,6 +26,12 @@
  */
 
 /**
+ * The labels file is a file that can be used by mutt or anything else and know all the possible
+ * labels you have on your mail folder by adding each labels present in a mail to it
+ */
+$labelsFile = getenv('HOME') . '/.labels';
+
+/**
  * Each operation is an array inside the $operations array, you don't need to initialize
  * the $operations but you need to make sure you append to it and not re-write unless you
  * to re-create it.
