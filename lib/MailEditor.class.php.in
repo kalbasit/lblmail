@@ -410,6 +410,11 @@ class MailEditor {
 	 */
 	protected function _implodeLabels() {
 
+		/** Is there any labels ? */
+		if(count($this->_labels) === 0) {
+			return '';
+		}
+
 		/** Prefix the imploded array from labels with the label header */
 		$labels = self::LABEL_HEADER . implode(', ', $this->_labels);
 
