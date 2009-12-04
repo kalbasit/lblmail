@@ -41,11 +41,17 @@ targets:
 		-e "s:@LIBDIR@:$(libdir):g" \
 		-e "s:@SHAREDIR@:$(sharedir):g" \
 		MailEditor.class.php.in > MailEditor.class.php
+	sed -e "s:@VERSION@:$(VERSION):g" \
+		-e "s:@LIBDIR@:$(libdir):g" \
+		-e "s:@SHAREDIR@:$(sharedir):g" \
+		Labels.class.php.in > Labels.class.php
 
 install:
 	$(INSTALL) -m 644 lblmail.php $(DESTDIR)$(libdir)/lblmail.php
 	$(INSTALL) -m 644 MailEditor.class.php $(DESTDIR)$(libdir)/MailEditor.class.php
+	$(INSTALL) -m 644 Labels.class.php $(DESTDIR)$(libdir)/Labels.class.php
 
 clean:
 	rm -f lblmail.php
 	rm -f MailEditor.class.php
+	rm -f Labels.class.php
