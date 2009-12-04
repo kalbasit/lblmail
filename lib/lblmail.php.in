@@ -55,8 +55,9 @@ $operations = array();
 /** Include the config file */
 require_once(CONFIG_FILE_PATH);
 
-/** Include the Mail Class */
+/** Include the Mail and Labels classes */
 require_once(LIB_DIR . '/MailEditor.class.php');
+require_once(LIB_DIR . '/Labels.class.php');
 
 /** Create the MailEditor object */
 try {
@@ -77,6 +78,31 @@ try {
 	$mailEditor->save();
 } catch (Exception $e) {
 	die($e->getMessage() . "\n");
+}
+
+/** Do we need to write the labels file ? */
+if(isset($labelsFile) && !empty($labelsFile)) {
+
+	/** Create the labels object */
+	try {
+		$labels = new Labels($labelsFile);
+	} catch (Exception $e) {
+		die($e->getMessage() . "\n");
+	}
+
+	/** add labels */
+	try {
+		$labels->addLabel($mailEditor->getLabels());
+	} catch (Exception $e) {
+		die($e->getMessage() . "\n");
+	}
+
+	/** Save the file */
+	try {
+		$labels->save();
+	} catch (Exception $e) {
+		die($e->getMessage() . "\n");
+	}
 }
 
 ?>
