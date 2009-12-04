@@ -1,5 +1,6 @@
+#!/bin/sh
 #
-#	vim:ft=make:fenc=UTF-8:ts=4:sts=0:sw=4:noexpandtab:foldmethod=marker:foldlevel=0:
+#	vim:ft=sh:fenc=UTF-8:ts=4:sts=0:sw=4:noexpandtab:foldmethod=marker:foldlevel=0:
 #
 #	lblmail is a small utility written in PHP, it allow you to label emails based on
 #	rules à la procmail, the advantage over procmail is the ability to apply the label
@@ -23,29 +24,3 @@
 #	along with LblMail.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-VERSION=@VERSION@
-
-prefix=
-bindir=
-libdir=
-sharedir=
-INSTALL=
-MAKE=
-
-targets:
-	sed -e "s:@VERSION@:$(VERSION):g" \
-		-e "s:@LIBDIR@:$(libdir):g" \
-		-e "s:@SHAREDIR@:$(sharedir):g" \
-		lblmail.in > lblmail
-	sed -e "s:@VERSION@:$(VERSION):g" \
-		-e "s:@LIBDIR@:$(libdir):g" \
-		-e "s:@SHAREDIR@:$(sharedir):g" \
-		lbldir.in > lbldir
-
-install:
-	$(INSTALL) -m 755 lblmail $(DESTDIR)$(bindir)/lblmail
-	$(INSTALL) -m 755 lbldir $(DESTDIR)$(bindir)/lblmail
-
-clean:
-	rm -f lblmail
-	rm -f lbldir
